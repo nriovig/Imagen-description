@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Descripción de Imágenes</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Aplicación de Descripción de Imágenes</h1>
+        <input type="file" id="imagenInput" accept="image/*">
+        <button id="generarBtn">Generar Descripción</button>
+        <div id="preview"></div>
+        <h2 id="caption"></h2>
+    </div>
+
+    <script>
+        const input = document.getElementById("imagenInput");
+        const btn = document.getElementById("generarBtn");
+        const preview = document.getElementById("preview");
+        const caption = document.getElementById("caption");
+
+        let selectedFile = null;
+        input.addEventListener("change", (e) => {
+            selectedFile = e.target.files[0];
+            preview.innerHTML = `<img src="${URL.createObjectURL(selectedFile)}" width="400">`;
+            caption.textContent = "";
+        });
+
+        btn.addEventListener("click", async () => {
+            if (!selectedFile) return alert("Sube una imagen primero!");
+            const formData = new FormData();
+            formData.append("file", selectedFile);
+            const response = await fetch("/caption", {
+                method: "POST",
+                body: formData
+            });
+            const data = await response.json();
+            caption.textContent = "Descripción: " + data.caption;
+        });
+    </script>
+</body>
+</html>
